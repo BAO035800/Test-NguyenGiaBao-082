@@ -14,33 +14,17 @@ export const mockVideos: Video[] = [
   },
   {
     id: "2",
-    videoUrl: "https://media.w3.org/2010/05/sintel/trailer.mp4",
-    authorName: "@sintel",
-    description: "Trailer phim hoạt hình Sintel đầy cảm xúc ⚔️",
+    videoUrl:
+      "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
+    authorName: "@fridayvibes",
+    description: "Cuối tuần rồi, thư giãn thôi nào 🌆🚗",
     likesCount: 9532,
   },
   {
     id: "3",
-    videoUrl:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    authorName: "@elephantsdream",
-    description: "Giấc mơ của loài voi — một thế giới siêu thực 🐘✨",
+    videoUrl: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+    authorName: "@sintel",
+    description: "Trailer phim hoạt hình Sintel đầy cảm xúc ⚔️",
     likesCount: 4410,
-  },
-  {
-    id: "4",
-    videoUrl:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    authorName: "@chromecast",
-    description: "Cùng bùng cháy với những khoảnh khắc rực lửa 🔥",
-    likesCount: 762,
-  },
-  {
-    id: "5",
-    videoUrl:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-    authorName: "@funtime",
-    description: "Niềm vui không có giới hạn, xem là ghiền 🎉",
-    likesCount: 18230,
   },
 ];
