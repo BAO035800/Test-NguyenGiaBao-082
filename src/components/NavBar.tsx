@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { Home, Compass, User, type LucideIcon } from "lucide-react";
+import type { TabKey } from "@/types/tab";
 
 interface NavItem {
-  key: string;
+  key: TabKey;
   label: string;
   icon: LucideIcon;
 }
@@ -15,16 +15,22 @@ const NAV_ITEMS: NavItem[] = [
   { key: "profile", label: "Hồ sơ", icon: User },
 ];
 
+interface NavBarProps {
+  /** Currently selected tab. */
+  active: TabKey;
+  /** Called when the user selects a tab. */
+  onSelect: (key: TabKey) => void;
+}
+
 /**
- * Primary navigation.
+ * Primary navigation (controlled component).
  * - Desktop (md+): fixed left sidebar.
  * - Mobile: fixed bottom navigation bar.
  *
- * Items are client-side only (no routing) and track an active state.
+ * Active tab + selection are owned by the parent (see AppShell) so that
+ * navigating switches the visible view.
  */
-export function NavBar() {
-  const [active, setActive] = useState<string>("home");
-
+export function NavBar({ active, onSelect }: NavBarProps) {
   return (
     <nav
       aria-label="Điều hướng chính"
@@ -37,7 +43,7 @@ export function NavBar() {
             <li key={key} className="md:w-full">
               <button
                 type="button"
-                onClick={() => setActive(key)}
+                onClick={() => onSelect(key)}
                 aria-current={isActive ? "page" : undefined}
                 className={`flex w-full flex-col items-center gap-1 px-3 py-2 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:flex-row md:gap-3 md:rounded-xl md:px-4 md:py-3 md:text-base ${
                   isActive

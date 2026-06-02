@@ -1,15 +1,8 @@
-import { VideoFeed } from "@/components/VideoFeed";
-import { NavBar } from "@/components/NavBar";
+import { AppShell } from "@/components/AppShell";
 import { mockVideos } from "@/data/mockVideos";
 
 export default function Home() {
-  return (
-    <main className="relative h-[100dvh] w-full overflow-hidden bg-black">
-      {/* Feed offset to leave room for the desktop sidebar (mobile uses bottom nav). */}
-      <div className="h-full w-full md:pl-20 lg:pl-56">
-        <VideoFeed videos={mockVideos} />
-      </div>
-      <NavBar />
-    </main>
-  );
+  // Server component: passes the mock data into the client shell, which owns
+  // the active-tab state and switches between the feed / explore / profile views.
+  return <AppShell videos={mockVideos} />;
 }
