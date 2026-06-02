@@ -1,8 +1,13 @@
-import { AppShell } from "@/components/AppShell";
+import type { Metadata } from "next";
+import { VideoFeed } from "@/components/VideoFeed";
 import { mockVideos } from "@/data/mockVideos";
 
+export const metadata: Metadata = {
+  title: "Trang chủ",
+};
+
 export default function Home() {
-  // Server component: passes the mock data into the client shell, which owns
-  // the active-tab state and switches between the feed / explore / profile views.
-  return <AppShell videos={mockVideos} />;
+  // Server component: renders the (client) vertical scroll-snap feed. The
+  // sidebar-offset content wrapper lives in the root layout.
+  return <VideoFeed videos={mockVideos} />;
 }
