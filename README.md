@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TikTok-style Vertical Video Feed
 
-## Getting Started
+Ứng dụng feed video cuộn dọc kiểu TikTok, xây bằng **Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS**.
 
-First, run the development server:
+## Tính năng
+
+- **Cuộn dọc full-screen** với scroll-snap (mỗi video chiếm trọn màn hình; PC hiển thị khung 9:16 căn giữa).
+- **Click vào video** để Play/Pause.
+- **Auto-play khi cuộn** — video tự phát khi vào tầm nhìn, tự dừng khi cuộn qua (IntersectionObserver).
+- **Nút Tim (Like)** đổi màu đỏ + tăng/giảm số like, **lưu bền qua API thật** (file JSON ở server).
+- **Thanh điều hướng** responsive: sidebar trái trên PC, bottom nav trên mobile.
+
+## Chạy dự án
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Mở [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Logic Play/Pause khi cuộn trang
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Tự động phát/dừng video dựa trên **[IntersectionObserver API](https://developer.mozilla.org/docs/Web/API/Intersection_Observer_API)** — KHÔNG dùng `scroll` event polling (nặng và dễ giật).
 
-## Learn More
+**1. Hook `useInView`** ([src/hooks/useInView.ts](src/hooks/useInView.ts)) bọc IntersectionObserver, theo dõi 1 phần tử và trả về `inView = true` khi phần tử hiển thị **≥ 60%** viewport:
 
-To learn more about Next.js, take a look at the following resources:
+```ts
+const observer = new IntersectionObserver(
+  ([entry]) => {
+    setInView(entry.isIntersecting && entry.intersectionRatio >= threshold); // threshold = 0.6
+  },
+  { threshold }
+);
+observer.observe(node);
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**2. `VideoCard`** ([src/components/VideoCard.tsx](src/components/VideoCard.tsx)) dùng `inView` để điều khiển thẻ `<video>`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```ts
+const { ref: containerRef, inView } = useInView<HTMLDivElement>({ threshold: 0.6 });
 
-## Deploy on Vercel
+useEffect(() => {
+  if (inView) {
+    el.play();            // cuộn tới → tự phát
+  } else {
+    el.pause();           // cuộn qua → dừng
+    el.currentTime = 0;   // reset về đầu video
+  }
+}, [inView]);
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Tóm tắt luồng:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Mỗi video card được IntersectionObserver theo dõi với `threshold: 0.6`.
+2. Khi card chiếm **≥ 60%** viewport → `inView` chuyển `true` → `video.play()`.
+3. Khi cuộn qua, độ hiển thị tụt dưới 60% → `inView` chuyển `false` → `video.pause()` và reset `currentTime = 0`.
+4. Observer được `disconnect()` khi component unmount để tránh memory leak.
+
+> Video được set `muted` + `playsInline` để trình duyệt không chặn autoplay; có nút bật/tắt tiếng riêng.
+
+## Cấu trúc chính
+
+```
+src/
+├── app/
+│   ├── page.tsx              # Trang feed
+│   └── api/likes/            # Route Handlers: GET map like, POST toggle like
+├── components/
+│   ├── VideoFeed.tsx         # Container scroll-snap
+│   ├── VideoCard.tsx         # Video + overlay + auto play/pause
+│   ├── ActionBar.tsx         # Tim / Bình luận / Chia sẻ
+│   └── NavBar.tsx            # Sidebar (PC) / Bottom nav (mobile)
+├── hooks/
+│   ├── useInView.ts          # IntersectionObserver cho auto-play
+│   └── useLikes.ts           # Đồng bộ trạng thái like với API
+├── lib/likesStore.ts         # Đọc/ghi file JSON lưu like
+└── data/mockVideos.ts        # Dữ liệu giả (3 video)
+```
+
+> Trạng thái like lưu ở `likes.store.json` (root, đã gitignore), seed từ `mockVideos.ts` ở lần gọi API đầu tiên. Đổi `likesCount` trong mock thì xoá file này để seed lại.
