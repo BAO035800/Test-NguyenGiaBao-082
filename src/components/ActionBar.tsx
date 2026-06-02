@@ -7,6 +7,8 @@ interface ActionBarProps {
   liked: boolean;
   /** Like count to display (already reflects the liked state). */
   likeCount: number;
+  /** Whether a like request is in flight (disables the button). */
+  likePending: boolean;
   /** Toggle handler for the like button. */
   onToggleLike: () => void;
 }
@@ -21,7 +23,12 @@ function formatCount(count: number): string {
 /**
  * Right-aligned vertical stack of engagement actions for a video card.
  */
-export function ActionBar({ liked, likeCount, onToggleLike }: ActionBarProps) {
+export function ActionBar({
+  liked,
+  likeCount,
+  likePending,
+  onToggleLike,
+}: ActionBarProps) {
   return (
     <div className="flex flex-col items-center gap-5">
       {/* Like */}
@@ -29,9 +36,11 @@ export function ActionBar({ liked, likeCount, onToggleLike }: ActionBarProps) {
         <button
           type="button"
           onClick={onToggleLike}
+          disabled={likePending}
           aria-pressed={liked}
+          aria-busy={likePending}
           aria-label={liked ? "Bỏ thích" : "Thích"}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition-transform hover:scale-110 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition-transform hover:scale-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           <Heart
             className={`h-7 w-7 transition-colors ${

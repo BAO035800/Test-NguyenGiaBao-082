@@ -12,21 +12,35 @@ interface VideoCardProps {
   muted: boolean;
   /** Toggles the shared muted state. */
   onToggleMuted: () => void;
+  /** Whether the current user liked this video (server-backed). */
+  liked: boolean;
+  /** Current like count to display (already reflects `liked`). */
+  likeCount: number;
+  /** Whether a like toggle request is in flight (disables the button). */
+  likePending: boolean;
+  /** Toggles the like state (optimistic + persisted to the backend). */
+  onToggleLike: () => void;
 }
 
 /**
  * A single full-screen video card with auto-play-on-scroll, tap-to-toggle
  * play/pause, like state, and a right-side action bar.
  */
-export function VideoCard({ video, muted, onToggleMuted }: VideoCardProps) {
+export function VideoCard({
+  video,
+  muted,
+  onToggleMuted,
+  liked,
+  likeCount,
+  likePending,
+  onToggleLike,
+}: VideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { ref: containerRef, inView } = useInView<HTMLDivElement>({
     threshold: 0.6,
   });
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(video.likesCount);
 
   // Auto-play when the card scrolls into view; pause + reset when it leaves.
   useEffect(() => {
@@ -64,14 +78,6 @@ export function VideoCard({ video, muted, onToggleMuted }: VideoCardProps) {
     } else {
       el.pause();
     }
-  };
-
-  const handleToggleLike = () => {
-    setLiked((prev) => {
-      const next = !prev;
-      setLikeCount((count) => count + (next ? 1 : -1));
-      return next;
-    });
   };
 
   return (
@@ -141,7 +147,8 @@ export function VideoCard({ video, muted, onToggleMuted }: VideoCardProps) {
           <ActionBar
             liked={liked}
             likeCount={likeCount}
-            onToggleLike={handleToggleLike}
+            likePending={likePending}
+            onToggleLike={onToggleLike}
           />
         </div>
       </div>

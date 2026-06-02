@@ -10,7 +10,7 @@ export const mockVideos: Video[] = [
     videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
     authorName: "@bigbuckbunny",
     description: "Chú thỏ to lớn dạo chơi trong rừng xanh 🐰🌳",
-    likesCount: 1284,
+    likesCount: 12,
   },
   {
     id: "2",
@@ -18,13 +18,13 @@ export const mockVideos: Video[] = [
       "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
     authorName: "@fridayvibes",
     description: "Cuối tuần rồi, thư giãn thôi nào 🌆🚗",
-    likesCount: 9532,
+    likesCount: 95,
   },
   {
     id: "3",
     videoUrl: "https://media.w3.org/2010/05/sintel/trailer.mp4",
     authorName: "@sintel",
     description: "Trailer phim hoạt hình Sintel đầy cảm xúc ⚔️",
-    likesCount: 4410,
+    likesCount: 40,
   },
 ];
